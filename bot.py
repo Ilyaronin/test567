@@ -23,4 +23,23 @@ def ban_user(message):
     else:
         bot.reply_to(message, "Эта команда должна быть использована в ответ на сообщение пользователя, которого вы хотите забанить.")
 
+
+@bot.message_handler(func=lambda message: True)
+def handle_all_messages(message):
+    # Сохраняем активность пользователя
+  
+    # Проверяем наличие ссылки в сообщении
+    if "https://" in message.text or "http://" in message.text:
+    
+        bot.ban_chat_member(message.chat.id, message.from_user.id)
+        bot.delete_message(message.chat.id, message.message_id)
+        
+        warning_msg = f"Пользователь @{message.from_user.username} был забанен за отправку ссылок!"
+        bot.send_message(message.chat.id, warning_msg)
+
+@bot.message_handler(content_types=['new_chat_members'])
+def make_some(message):
+    bot.send_message(message.chat.id, 'I accepted a new user!')
+    bot.approve_chat_join_request(message.chat.id, message.from_user.id)
+
 bot.infinity_polling(none_stop=True)
